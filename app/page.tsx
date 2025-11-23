@@ -9,6 +9,7 @@ import { ExperienceSection } from "@/components/sections/experience";
 import { ProjectsSection } from "@/components/sections/projects";
 import { PublicationsSection } from "@/components/sections/publications";
 import { ContactSection } from "@/components/sections/contact";
+import { Footer } from "@/components/ui/footer-section";
 
 export default function Home() {
   const heroProps: HeroLandingProps = {
@@ -86,6 +87,7 @@ export default function Home() {
       <ProjectsSection />
       <PublicationsSection />
       <ContactSection />
+      <Footer />
     </div>
   )
 }
