@@ -15,7 +15,7 @@ export default function Home() {
   const heroProps: HeroLandingProps = {
     // Logo and branding
     logo: {
-      src: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=100&h=100&fit=crop",
+      src: "/Gemini_Generated_Image_r6j89cr6j89cr6j8.png",
       alt: "Kabid Yeiad Logo",
       companyName: "Kabid Yeiad"
     },
@@ -80,10 +80,10 @@ export default function Home() {
       <div id="home">
         <HeroLanding {...heroProps} />
       </div>
+      <ExperienceSection />
       <AboutSection />
       <SkillsSection />
       <ServicesSection />
-      <ExperienceSection />
       <ProjectsSection />
       <PublicationsSection />
       <ContactSection />

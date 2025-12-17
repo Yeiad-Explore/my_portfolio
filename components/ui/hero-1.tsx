@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 
@@ -56,7 +56,7 @@ interface HeroLandingProps {
 
 const defaultProps: Partial<HeroLandingProps> = {
   logo: {
-    src: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=100&h=100&fit=crop",
+    src: "/Gemini_Generated_Image_r6j89cr6j89cr6j8.png",
     alt: "Portfolio Logo",
     companyName: "Kabid Yeiad"
   },
@@ -96,6 +96,16 @@ export function HeroLanding(props: HeroLandingProps) {
   } = { ...defaultProps, ...props }
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const getTitleSizeClasses = () => {
     switch (titleSize) {
@@ -135,8 +145,30 @@ export function HeroLanding(props: HeroLandingProps) {
 
   return (
     <div className={`min-h-screen w-screen overflow-x-hidden relative ${className || ''}`}>
-      <header className="absolute inset-x-0 top-0 z-1">
-        <nav aria-label="Global" className="flex items-center justify-between p-4 sm:p-6 lg:px-8">
+      <header className="fixed inset-x-0 top-0 z-50">
+        {/* Scrolled state - fixed centered nav */}
+        {navigation && navigation.length > 0 && (
+          <div className={`hidden lg:flex lg:gap-x-8 xl:gap-x-12 px-6 py-3 rounded-full backdrop-blur-md bg-background/60 border border-border/50 shadow-lg transition-all duration-300 fixed top-4 left-1/2 -translate-x-1/2 ${
+            isScrolled ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          }`}>
+            {navigation.map((item) => (
+              <a 
+                key={item.name} 
+                href={item.href} 
+                className="relative text-sm/6 font-semibold text-foreground transition-all duration-300 group px-3 py-2 rounded-lg"
+              >
+                <span className="relative z-10">{item.name}</span>
+                <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/20 via-primary/30 to-primary/20 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300 -z-0"></span>
+                <span className="absolute inset-0 rounded-lg bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"></span>
+              </a>
+            ))}
+          </div>
+        )}
+        
+        {/* Normal state - full nav bar */}
+        <nav aria-label="Global" className={`flex items-center justify-between p-4 sm:p-6 lg:px-8 max-w-7xl mx-auto transition-all duration-300 ${
+          isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}>
           <div className="flex lg:flex-1">
             <a href="#" className="-m-1.5 p-1.5">
               <span className="sr-only">{logo?.companyName}</span>
@@ -158,18 +190,29 @@ export function HeroLanding(props: HeroLandingProps) {
             </button>
           </div>
           {navigation && navigation.length > 0 && (
-            <div className="hidden lg:flex lg:gap-x-8 xl:gap-x-12">
+            <div className="hidden lg:flex lg:gap-x-8 xl:gap-x-12 px-6 py-3 rounded-full backdrop-blur-md bg-background/60 border border-border/50 shadow-lg">
               {navigation.map((item) => (
-                <a key={item.name} href={item.href} className="text-sm/6 font-semibold text-foreground hover:text-muted-foreground transition-colors">
-                  {item.name}
+                <a 
+                  key={item.name} 
+                  href={item.href} 
+                  className="relative text-sm/6 font-semibold text-foreground transition-all duration-300 group px-3 py-2 rounded-lg"
+                >
+                  <span className="relative z-10">{item.name}</span>
+                  <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/20 via-primary/30 to-primary/20 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300 -z-0"></span>
+                  <span className="absolute inset-0 rounded-lg bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"></span>
                 </a>
               ))}
             </div>
           )}
           {loginText && loginHref && (
             <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-              <a href={loginHref} className="text-sm/6 font-semibold text-foreground hover:text-muted-foreground transition-colors">
-                {loginText} <span aria-hidden="true">&rarr;</span>
+              <a 
+                href={loginHref} 
+                className="relative text-sm/6 font-semibold text-foreground transition-all duration-300 group px-4 py-2 rounded-lg"
+              >
+                <span className="relative z-10">{loginText} <span aria-hidden="true">&rarr;</span></span>
+                <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/20 via-primary/30 to-primary/20 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300 -z-0"></span>
+                <span className="absolute inset-0 rounded-lg bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"></span>
               </a>
             </div>
           )}
@@ -225,11 +268,11 @@ export function HeroLanding(props: HeroLandingProps) {
         </Dialog>
       </header>
       <div className="relative isolate px-6 pt-4 overflow-hidden min-h-screen flex flex-col justify-center">        
-        <div className="mx-auto max-w-4xl pt-20 sm:pt-25">
+        <div className="mx-auto max-w-4xl -mt-16 sm:-mt-12 pt-0 sm:pt-2 relative z-10">
           {/* Announcement banner */}
           {announcementBanner && (
-            <div className="hidden sm:mb-2 sm:flex sm:justify-center">
-              <div className="relative rounded-full px-2 py-1 text-xs sm:px-3 sm:text-sm/6 text-muted-foreground ring-1 ring-border hover:ring-ring transition-all">
+            <div className="hidden sm:mb-4 sm:flex sm:justify-center relative z-20">
+              <div className="relative rounded-full px-2 py-1 text-xs sm:px-3 sm:text-sm/6 text-muted-foreground ring-1 ring-border/50 hover:ring-border transition-all bg-background/20 backdrop-blur-md shadow-lg border border-white/10">
                 {announcementBanner.text}{' '}
                 <a href={announcementBanner.linkHref} className="font-semibold text-primary hover:text-primary/80 transition-colors">
                   <span aria-hidden="true" className="absolute inset-0" />
