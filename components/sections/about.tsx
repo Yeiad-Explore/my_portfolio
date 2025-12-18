@@ -1,40 +1,41 @@
 'use client'
 
-import ScrollStack, { ScrollStackItem } from '@/components/ui/ScrollStack'
+import DisplayCards from '@/components/ui/display-cards'
+import { Brain, Cpu, Zap, BookOpen, Globe, Rocket } from 'lucide-react'
 
 export function AboutSection() {
-  const items = [
+  const cards = [
     {
-      title: "Turning complex workflows into intelligent automation",
-      description: "I'm an AI Engineer and Consultant focused on helping businesses harness the power of automation and large language models. My work spans multi-agent systems, RAG-based chatbots, speech processing, and n8n-powered business automation.",
-      icon: "🧠"
+      icon: <Brain className="size-4 text-purple-300" />,
+      title: "AI Engineering",
+      description: "Multi-agent systems & automation",
+      date: "3+ production systems",
+      iconClassName: "text-purple-500",
+      titleClassName: "text-purple-500",
+      className:
+        "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
     },
     {
-      title: "AI Pipelines Deployed",
-      description: "3+ production-ready AI systems",
-      icon: "⚙️"
+      icon: <Cpu className="size-4 text-blue-300" />,
+      title: "Efficiency",
+      description: "40% improvement in orchestration",
+      date: "Proven results",
+      iconClassName: "text-blue-500",
+      titleClassName: "text-blue-500",
+      className:
+        "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
     },
     {
-      title: "Efficiency Improvement",
-      description: "40% improvement in multi-agent orchestration",
-      icon: "🧩"
+      icon: <BookOpen className="size-4 text-green-300" />,
+      title: "Research",
+      description: "2 NLP papers published",
+      date: "Academic impact",
+      iconClassName: "text-green-500",
+      titleClassName: "text-green-500",
+      className:
+        "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
     },
-    {
-      title: "Research Publications",
-      description: "2 research papers in NLP published",
-      icon: "💬"
-    },
-    {
-      title: "Global Reach",
-      description: "Clients & collaborations across AI and automation domains",
-      icon: "🌍"
-    },
-    {
-      title: "Bridging Research & Practice",
-      description: "With experience in developing AI pipelines and production-ready automation tools, I bridge the gap between cutting-edge research and practical business solutions.",
-      icon: "🚀"
-    }
-  ]
+  ];
 
   return (
     <section id="about" className="relative py-24 sm:py-32 min-h-screen">
@@ -43,37 +44,50 @@ export function AboutSection() {
           <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl mb-4">
             Building Intelligence
           </h2>
-          <p className="text-lg text-muted-foreground">
-            Scroll to explore my journey in AI and automation
+          <p className="text-lg text-muted-foreground mb-8">
+            Hover to explore my journey in AI and automation
           </p>
         </div>
-      </div>
 
-      <ScrollStack
-        useWindowScroll={true}
-        itemDistance={120}
-        itemStackDistance={30}
-        baseScale={0.92}
-        stackPosition="30%"
-        className=""
-      >
-        {items.map((item, index) => (
-          <ScrollStackItem
-            key={index}
-            itemClassName="bg-card/80 backdrop-blur-sm border-2 border-border hover:border-ring transition-all duration-300 shadow-lg"
-          >
-            <div className="flex flex-col h-full justify-center">
-              <div className="text-5xl mb-6">{item.icon}</div>
-              <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-                {item.title}
-              </h3>
-              <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-                {item.description}
-              </p>
+        {/* Two-column layout: Text on left, Cards on right */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[500px]">
+          {/* Left Column - Text Content */}
+          <div className="space-y-6">
+            <p className="text-lg text-muted-foreground leading-relaxed text-left">
+              I'm an <span className="text-foreground font-semibold">AI Engineer and Consultant</span> focused on helping businesses harness the power of automation and large language models. My work spans multi-agent systems, RAG-based chatbots, speech processing, and n8n-powered business automation.
+            </p>
+            
+            <div className="space-y-4 pt-4">
+              <div className="flex items-start gap-4">
+                <Zap className="size-6 text-primary mt-1 flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-foreground mb-1">Fast Delivery</h3>
+                  <p className="text-sm text-muted-foreground text-left">Production-ready AI systems deployed efficiently</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <Globe className="size-6 text-primary mt-1 flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-foreground mb-1">Global Reach</h3>
+                  <p className="text-sm text-muted-foreground text-left">Clients & collaborations worldwide</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <Rocket className="size-6 text-primary mt-1 flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-foreground mb-1">Innovation</h3>
+                  <p className="text-sm text-muted-foreground text-left">Bridging research & practical solutions</p>
+                </div>
+              </div>
             </div>
-          </ScrollStackItem>
-        ))}
-      </ScrollStack>
+          </div>
+
+          {/* Right Column - Display Cards */}
+          <div className="flex justify-center lg:justify-end items-center">
+            <DisplayCards cards={cards} />
+          </div>
+        </div>
+      </div>
     </section>
   )
 }

@@ -198,6 +198,17 @@
   .dark .glow-border:hover {
     box-shadow: 0 0 20px rgba(59, 130, 246, 0.5), 0 0 30px rgba(59, 130, 246, 0.4), 0 0 40px rgba(59, 130, 246, 0.3);
   }
+
+  /* HeroLanding title custom styles */
+  .hero-title-large {
+    opacity: 1;
+  }
+
+  @media (min-width: 768px) {
+    .hero-title-large {
+      font-size: 100px;
+    }
+  }
 }
 
 @keyframes star-movement-bottom {

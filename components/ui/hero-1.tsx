@@ -1,10 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 
 import { Menu, X } from 'lucide-react'
+
+// Dynamically import Antigravity to avoid SSR issues with Three.js
+const Antigravity = dynamic(() => import('@/components/ui/Antigravity'), {
+  ssr: false,
+})
 
 interface NavigationItem {
   name: string
@@ -107,6 +113,22 @@ export function HeroLanding(props: HeroLandingProps) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault()
+    const targetId = href.replace('#', '')
+    const targetElement = document.getElementById(targetId)
+    
+    if (targetElement) {
+      targetElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }
+    
+    // Close mobile menu if open
+    setMobileMenuOpen(false)
+  }
+
   const getTitleSizeClasses = () => {
     switch (titleSize) {
       case 'small':
@@ -125,6 +147,7 @@ export function HeroLanding(props: HeroLandingProps) {
         <a
           key={index}
           href={cta.href}
+          onClick={(e) => handleSmoothScroll(e, cta.href)}
           className="rounded-lg bg-primary px-3 py-2 sm:px-3.5 sm:py-2.5 text-xs sm:text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring transition-colors"
         >
           {cta.text}
@@ -135,6 +158,7 @@ export function HeroLanding(props: HeroLandingProps) {
         <a
           key={index}
           href={cta.href}
+          onClick={(e) => handleSmoothScroll(e, cta.href)}
           className="text-xs sm:text-sm/6 font-semibold text-foreground hover:text-muted-foreground transition-colors"
         >
           {cta.text} <span aria-hidden="true">→</span>
@@ -154,7 +178,8 @@ export function HeroLanding(props: HeroLandingProps) {
             {navigation.map((item) => (
               <a 
                 key={item.name} 
-                href={item.href} 
+                href={item.href}
+                onClick={(e) => handleSmoothScroll(e, item.href)}
                 className="relative text-sm/6 font-semibold text-foreground transition-all duration-300 group px-3 py-2 rounded-lg"
               >
                 <span className="relative z-10">{item.name}</span>
@@ -194,7 +219,8 @@ export function HeroLanding(props: HeroLandingProps) {
               {navigation.map((item) => (
                 <a 
                   key={item.name} 
-                  href={item.href} 
+                  href={item.href}
+                  onClick={(e) => handleSmoothScroll(e, item.href)}
                   className="relative text-sm/6 font-semibold text-foreground transition-all duration-300 group px-3 py-2 rounded-lg"
                 >
                   <span className="relative z-10">{item.name}</span>
@@ -207,7 +233,8 @@ export function HeroLanding(props: HeroLandingProps) {
           {loginText && loginHref && (
             <div className="hidden lg:flex lg:flex-1 lg:justify-end">
               <a 
-                href={loginHref} 
+                href={loginHref}
+                onClick={(e) => handleSmoothScroll(e, loginHref)}
                 className="relative text-sm/6 font-semibold text-foreground transition-all duration-300 group px-4 py-2 rounded-lg"
               >
                 <span className="relative z-10">{loginText} <span aria-hidden="true">&rarr;</span></span>
@@ -245,6 +272,7 @@ export function HeroLanding(props: HeroLandingProps) {
                       <a
                         key={item.name}
                         href={item.href}
+                        onClick={(e) => handleSmoothScroll(e, item.href)}
                         className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-card-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
                       >
                         {item.name}
@@ -256,6 +284,7 @@ export function HeroLanding(props: HeroLandingProps) {
                   <div className="py-6">
                     <a
                       href={loginHref}
+                      onClick={(e) => handleSmoothScroll(e, loginHref)}
                       className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-card-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
                     >
                       {loginText}
@@ -267,7 +296,23 @@ export function HeroLanding(props: HeroLandingProps) {
           </DialogContent>
         </Dialog>
       </header>
-      <div className="relative isolate px-6 pt-4 overflow-hidden min-h-screen flex flex-col justify-center">        
+      <div className="relative isolate px-6 pt-4 overflow-hidden min-h-screen flex flex-col justify-center">
+        {/* Antigravity background effect */}
+        <div className="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-60">
+          <Antigravity
+            count={300}
+            magnetRadius={6}
+            ringRadius={7}
+            waveSpeed={0.4}
+            waveAmplitude={1}
+            particleSize={1.5}
+            lerpSpeed={0.05}
+            color={'#FF9FFC'}
+            autoAnimate={true}
+            particleVariance={1}
+          />
+        </div>
+        
         <div className="mx-auto max-w-4xl -mt-16 sm:-mt-12 pt-0 sm:pt-2 relative z-10">
           {/* Announcement banner */}
           {announcementBanner && (
@@ -283,7 +328,7 @@ export function HeroLanding(props: HeroLandingProps) {
           )}
           
           <div className="text-center">
-            <h1 className={`${getTitleSizeClasses()} font-semibold tracking-tight text-balance text-foreground`}>
+            <h1 className={`${getTitleSizeClasses()} font-semibold tracking-tight text-balance text-foreground hero-title-large`}>
               {title}
             </h1>
             <p className="mt-6 sm:mt-8 text-lg sm:text-xl font-semibold text-pretty text-foreground sm:text-2xl/8">

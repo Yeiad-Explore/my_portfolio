@@ -36,7 +36,6 @@ export default function Home() {
     // Hero content
     title: "Kabid Yeiad",
     description: "I design intelligent AI systems and build automation workflows that help businesses scale smarter.",
-    subtitle: "I specialize in AI-driven automation, custom n8n workflows, and generative AI systems. From intelligent chatbots to workflow orchestration — I help startups and teams integrate AI into real business processes.",
     
     // Announcement banner
     announcementBanner: {
