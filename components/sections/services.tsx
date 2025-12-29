@@ -1,33 +1,41 @@
 'use client'
 
+import CardFlip from '@/components/ui/flip-card'
+
 export function ServicesSection() {
   const services = [
     {
-      icon: "💡",
       title: "AI Solutions & Consulting",
-      items: [
+      subtitle: "Intelligent AI systems for your business",
+      description: "Transform your business with cutting-edge AI solutions. From system design to deployment, I help you leverage the power of artificial intelligence to solve complex problems and drive innovation.",
+      features: [
         "AI system design, integration, and deployment",
         "RAG-based chatbot development",
         "Multi-agent and GenAI pipeline architecture"
-      ]
+      ],
+      color: "#6366f1" // Indigo
     },
     {
-      icon: "⚙️",
       title: "Business Workflow Automation",
-      items: [
+      subtitle: "Streamline operations with smart automation",
+      description: "Eliminate manual tasks and boost productivity with intelligent workflow automation. Connect your tools, automate processes, and focus on what matters most for your business growth.",
+      features: [
         "n8n workflow design and implementation",
         "Data automation, lead processing, and reporting pipelines",
         "Integration with CRM, Notion, Airtable, Slack, and Gmail"
-      ]
+      ],
+      color: "#10b981" // Emerald
     },
     {
-      icon: "🧠",
       title: "Model Development & Fine-tuning",
-      items: [
+      subtitle: "Custom AI models tailored to your needs",
+      description: "Build and fine-tune AI models that understand your specific domain. From speech recognition to translation, create models that deliver superior performance for your unique use cases.",
+      features: [
         "Whisper, VITS, and Transformer-based fine-tuning",
         "Speech recognition and translation models",
         "Custom dataset curation and evaluation"
-      ]
+      ],
+      color: "#f59e0b" // Amber
     }
   ]
 
@@ -42,26 +50,19 @@ export function ServicesSection() {
             Comprehensive AI and automation solutions for your business
           </p>
         </div>
-        <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-          <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-1 lg:gap-y-16">
+        <div className="mx-auto mt-16 sm:mt-20 lg:mt-24">
+          <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-12">
             {services.map((service) => (
-              <div key={service.title} className="relative pl-16">
-                <dt className="text-base font-semibold leading-7 text-foreground">
-                  <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                    <span className="text-2xl">{service.icon}</span>
-                  </div>
-                  <div className="text-xl">{service.title}</div>
-                </dt>
-                <dd className="mt-2 text-base leading-7 text-muted-foreground">
-                  <ul className="list-disc list-inside space-y-2 ml-4">
-                    {service.items.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ul>
-                </dd>
-              </div>
+              <CardFlip
+                key={service.title}
+                title={service.title}
+                subtitle={service.subtitle}
+                description={service.description}
+                features={service.features}
+                color={service.color}
+              />
             ))}
-          </dl>
+          </div>
         </div>
       </div>
     </section>
