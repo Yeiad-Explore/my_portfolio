@@ -182,6 +182,174 @@
     @apply md:col-span-2 md:row-span-2;
   }
 
+  /* Skills Bento Grid Styles */
+  .skills-bento-grid {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-6;
+    grid-auto-rows: minmax(220px, auto);
+  }
+
+  .skill-bento-item {
+    @apply relative rounded-2xl p-6 bg-card/50 backdrop-blur-sm border border-border overflow-hidden;
+    @apply transition-all duration-500 ease-out;
+    position: relative;
+    isolation: isolate;
+  }
+
+  .skill-bento-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+      800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      var(--gradient-color, oklch(0.646 0.222 41.116)),
+      transparent 50%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .skill-bento-item:hover::before {
+    opacity: 0.15;
+  }
+
+  .skill-bento-item::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(
+      135deg,
+      var(--gradient-color, oklch(0.646 0.222 41.116)),
+      transparent 40%,
+      transparent 60%,
+      var(--gradient-color, oklch(0.488 0.243 264.376))
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .skill-bento-item:hover::after {
+    opacity: 0.3;
+  }
+
+  .skill-bento-item:hover {
+    @apply border-transparent shadow-2xl;
+    transform: translateY(-4px);
+  }
+
+  .skill-bento-content {
+    @apply relative z-10 h-full flex flex-col;
+  }
+
+  .skill-tag {
+    @apply inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium;
+    @apply bg-background/80 backdrop-blur-sm border border-border/50;
+    @apply text-foreground/90;
+    @apply transition-all duration-300;
+    @apply hover:scale-105 hover:border-border hover:shadow-md;
+  }
+
+  .skill-bento-item:hover .skill-tag {
+    @apply border-border/80;
+    box-shadow: 0 2px 12px -2px var(--gradient-color, oklch(0.646 0.222 41.116));
+  }
+
+  .skill-bento-item.col-span-1 {
+    @apply col-span-1;
+  }
+
+  .skill-bento-item.col-span-2 {
+    @apply col-span-1 md:col-span-2;
+  }
+
+  /* Bento Grid Gradient Glow Effects */
+  .bento-card {
+    position: relative;
+  }
+
+  .bento-card::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 107, 0, 0.3),
+      rgba(138, 43, 226, 0.3),
+      rgba(59, 130, 246, 0.3),
+      rgba(255, 193, 7, 0.3),
+      rgba(236, 72, 153, 0.3)
+    );
+    background-size: 300% 300%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.5s ease, background-position 3s ease;
+    pointer-events: none;
+    z-index: 0;
+    animation: gradient-shift 8s ease infinite;
+  }
+
+  .bento-card:hover::before {
+    opacity: 1;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .bento-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(255, 255, 255, 0.1),
+      transparent 50%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .bento-card:hover::after {
+    opacity: 1;
+  }
+
+  .bento-card:hover {
+    box-shadow: 
+      0 0 20px rgba(255, 107, 0, 0.3),
+      0 0 40px rgba(138, 43, 226, 0.2),
+      0 0 60px rgba(59, 130, 246, 0.1);
+  }
+
+  .dark .bento-card:hover {
+    box-shadow: 
+      0 0 30px rgba(255, 107, 0, 0.4),
+      0 0 50px rgba(138, 43, 226, 0.3),
+      0 0 70px rgba(59, 130, 246, 0.2);
+  }
+
   .glow-border {
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.1), 0 0 12px rgba(59, 130, 246, 0.2);
     transition: box-shadow 0.3s ease, ring-color 0.3s ease;
