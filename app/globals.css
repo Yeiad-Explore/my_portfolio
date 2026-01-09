@@ -410,3 +410,376 @@
     animation: star-movement-top linear infinite alternate;
   }
 }
+
+/* CPU Architecture Component Styles */
+.cpu-architecture {
+  offset-anchor: 10px 0px;
+  animation: animation-path;
+  animation-iteration-count: infinite;
+  animation-timing-function: cubic-bezier(0.75, -0.01, 0, 0.99);
+}
+
+.cpu-line-1 {
+  offset-path: path("M 10 20 h 79.5 q 5 0 5 5 v 30");
+  animation-duration: 5s;
+  animation-delay: 1s;
+}
+
+.cpu-line-2 {
+  offset-path: path("M 180 10 h -69.7 q -5 0 -5 5 v 40");
+  animation-delay: 6s;
+  animation-duration: 2s;
+}
+
+.cpu-line-3 {
+  offset-path: path("M 130 20 v 21.8 q 0 5 -5 5 h -25");
+  animation-delay: 4s;
+  animation-duration: 6s;
+}
+
+.cpu-line-4 {
+  offset-path: path("M 170 80 v -21.8 q 0 -5 -5 -5 h -65");
+  animation-delay: 3s;
+  animation-duration: 3s;
+}
+
+.cpu-line-5 {
+  offset-path: path(
+    "M 135 65 h 15 q 5 0 5 5 v 10 q 0 5 -5 5 h -39.8 q -5 0 -5 -5 v -35"
+  );
+  animation-delay: 9s;
+  animation-duration: 4s;
+}
+
+.cpu-line-6 {
+  offset-path: path("M 94.8 95 v -46");
+  animation-delay: 3s;
+  animation-duration: 7s;
+}
+
+.cpu-line-7 {
+  offset-path: path(
+    "M 88 88 v -15 q 0 -5 -5 -5 h -10 q -5 0 -5 -5 v -5 q 0 -5 5 -5 h 28"
+  );
+  animation-delay: 4s;
+  animation-duration: 4s;
+}
+
+.cpu-line-8 {
+  offset-path: path("M 30 30 h 25 q 5 0 5 5 v 6.5 q 0 5 5 5 h 35");
+  animation-delay: 3s;
+  animation-duration: 3s;
+}
+
+@keyframes animation-path {
+  0% {
+    offset-distance: 0%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+/* Code Syntax Component Styles */
+.code-syntax-line-1,
+.code-syntax-line-2,
+.code-syntax-line-3,
+.code-syntax-line-4,
+.code-syntax-line-5,
+.code-syntax-line-6,
+.code-syntax-line-7 {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: code-syntax-draw 2s ease-in-out forwards;
+}
+
+.code-syntax-line-1 { animation-delay: 0.1s; }
+.code-syntax-line-2 { animation-delay: 0.3s; }
+.code-syntax-line-3 { animation-delay: 0.5s; }
+.code-syntax-line-4 { animation-delay: 0.7s; }
+.code-syntax-line-5 { animation-delay: 0.9s; }
+.code-syntax-line-6 { animation-delay: 1.1s; }
+.code-syntax-line-7 { animation-delay: 1.3s; }
+
+.code-syntax-dot-1,
+.code-syntax-dot-2,
+.code-syntax-dot-3 {
+  animation: code-syntax-pulse 2s ease-in-out infinite;
+}
+
+.code-syntax-dot-1 { animation-delay: 0s; }
+.code-syntax-dot-2 { animation-delay: 0.7s; }
+.code-syntax-dot-3 { animation-delay: 1.4s; }
+
+@keyframes code-syntax-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes code-syntax-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+}
+
+/* Network Nodes Component Styles */
+.network-line-1,
+.network-line-2,
+.network-line-3,
+.network-line-4,
+.network-line-5,
+.network-line-6 {
+  stroke-dasharray: 10 5;
+  animation: network-line-flow 3s linear infinite;
+}
+
+.network-line-1 { animation-delay: 0s; }
+.network-line-2 { animation-delay: 0.5s; }
+.network-line-3 { animation-delay: 1s; }
+.network-line-4 { animation-delay: 1.5s; }
+.network-line-5 { animation-delay: 2s; }
+.network-line-6 { animation-delay: 2.5s; }
+
+.network-node-center,
+.network-node-1,
+.network-node-2,
+.network-node-3,
+.network-node-4 {
+  animation: network-node-pulse 2s ease-in-out infinite;
+}
+
+.network-node-center { animation-delay: 0s; }
+.network-node-1 { animation-delay: 0.4s; }
+.network-node-2 { animation-delay: 0.8s; }
+.network-node-3 { animation-delay: 1.2s; }
+.network-node-4 { animation-delay: 1.6s; }
+
+@keyframes network-line-flow {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 15;
+  }
+}
+
+@keyframes network-node-pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* Cloud Infrastructure Component Styles */
+.cloud-shape-1,
+.cloud-shape-2 {
+  animation: cloud-float 8s ease-in-out infinite;
+}
+
+.cloud-shape-1 { animation-delay: 0s; }
+.cloud-shape-2 { animation-delay: 4s; }
+
+.cloud-server-1,
+.cloud-server-2,
+.cloud-server-3,
+.cloud-server-4 {
+  animation: cloud-server-glow 3s ease-in-out infinite;
+}
+
+.cloud-server-1 { animation-delay: 0s; }
+.cloud-server-2 { animation-delay: 0.75s; }
+.cloud-server-3 { animation-delay: 1.5s; }
+.cloud-server-4 { animation-delay: 2.25s; }
+
+.cloud-line-1,
+.cloud-line-2,
+.cloud-line-3 {
+  stroke-dasharray: 5 3;
+  animation: cloud-line-pulse 2s linear infinite;
+}
+
+.cloud-line-1 { animation-delay: 0s; }
+.cloud-line-2 { animation-delay: 0.7s; }
+.cloud-line-3 { animation-delay: 1.4s; }
+
+@keyframes cloud-float {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-5px);
+    opacity: 0.6;
+  }
+}
+
+@keyframes cloud-server-glow {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes cloud-line-pulse {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    stroke-dashoffset: 8;
+    opacity: 0.3;
+  }
+}
+
+/* Workflow Automation Component Styles */
+.workflow-node-1,
+.workflow-node-2,
+.workflow-node-3,
+.workflow-node-4,
+.workflow-branch-node {
+  animation: workflow-node-active 2s ease-in-out infinite;
+}
+
+.workflow-node-1 { animation-delay: 0s; }
+.workflow-node-2 { animation-delay: 0.5s; }
+.workflow-node-3 { animation-delay: 1s; }
+.workflow-node-4 { animation-delay: 1.5s; }
+.workflow-branch-node { animation-delay: 0.75s; }
+
+.workflow-line-1,
+.workflow-line-2,
+.workflow-line-3 {
+  stroke-dasharray: 10 5;
+  animation: workflow-line-flow 2s linear infinite;
+}
+
+.workflow-line-1 { animation-delay: 0s; }
+.workflow-line-2 { animation-delay: 0.7s; }
+.workflow-line-3 { animation-delay: 1.4s; }
+
+.workflow-branch-1 {
+  stroke-dasharray: 10 5;
+  animation: workflow-branch-flow 2.5s linear infinite;
+  animation-delay: 1s;
+}
+
+@keyframes workflow-node-active {
+  0%, 100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes workflow-line-flow {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 15;
+  }
+}
+
+@keyframes workflow-branch-flow {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 15;
+  }
+}
+
+/* Neural Network Component Styles */
+.neural-node-1,
+.neural-node-2,
+.neural-node-3,
+.neural-node-4,
+.neural-node-5,
+.neural-node-6,
+.neural-node-7,
+.neural-node-8,
+.neural-node-9 {
+  animation: neural-node-pulse 2s ease-in-out infinite;
+}
+
+.neural-node-1 { animation-delay: 0s; }
+.neural-node-2 { animation-delay: 0.2s; }
+.neural-node-3 { animation-delay: 0.4s; }
+.neural-node-4 { animation-delay: 0.6s; }
+.neural-node-5 { animation-delay: 0.8s; }
+.neural-node-6 { animation-delay: 1s; }
+.neural-node-7 { animation-delay: 1.2s; }
+.neural-node-8 { animation-delay: 1.4s; }
+.neural-node-9 { animation-delay: 1.6s; }
+
+.neural-connection-1,
+.neural-connection-2,
+.neural-connection-3,
+.neural-connection-4,
+.neural-connection-5,
+.neural-connection-6,
+.neural-connection-7,
+.neural-connection-8,
+.neural-connection-9,
+.neural-connection-10,
+.neural-connection-11,
+.neural-connection-12 {
+  stroke-dasharray: 5 3;
+  animation: neural-connection-pulse 2s linear infinite;
+}
+
+.neural-connection-1 { animation-delay: 0s; }
+.neural-connection-2 { animation-delay: 0.15s; }
+.neural-connection-3 { animation-delay: 0.3s; }
+.neural-connection-4 { animation-delay: 0.45s; }
+.neural-connection-5 { animation-delay: 0.6s; }
+.neural-connection-6 { animation-delay: 0.75s; }
+.neural-connection-7 { animation-delay: 0.9s; }
+.neural-connection-8 { animation-delay: 1.05s; }
+.neural-connection-9 { animation-delay: 1.2s; }
+.neural-connection-10 { animation-delay: 1.35s; }
+.neural-connection-11 { animation-delay: 1.5s; }
+.neural-connection-12 { animation-delay: 1.65s; }
+
+@keyframes neural-node-pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes neural-connection-pulse {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    stroke-dashoffset: 8;
+    opacity: 0.2;
+  }
+}

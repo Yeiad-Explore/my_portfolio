@@ -2,6 +2,7 @@
 
 import DisplayCards from '@/components/ui/display-cards'
 import { Brain, Cpu, Zap, BookOpen, Globe, Rocket } from 'lucide-react'
+import { CpuArchitecture } from '@/components/ui/cpu-architecture'
 
 export function AboutSection() {
   const cards = [
@@ -38,8 +39,17 @@ export function AboutSection() {
   ];
 
   return (
-    <section id="about" className="relative py-24 sm:py-32 min-h-screen">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <section id="about" className="relative py-24 sm:py-32 min-h-screen overflow-hidden">
+      {/* CPU Architecture Background Element */}
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-10 dark:opacity-5 pointer-events-none hidden lg:block">
+        <CpuArchitecture 
+          width="400" 
+          height="200" 
+          text="AI"
+          className="text-primary"
+        />
+      </div>
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl mb-4">
             Building Intelligence
