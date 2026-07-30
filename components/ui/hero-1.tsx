@@ -8,6 +8,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { SplitText } from '@/components/motion/split-text'
 import { Magnetic } from '@/components/motion/magnetic'
 import { ScrollCue } from '@/components/motion/scroll-cue'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { cn } from '@/lib/utils'
 import { DELAY, LOOP, SPRING, TRANSITION, loop } from '@/lib/motion'
 import { useMotionPrefs } from '@/lib/use-motion'
@@ -270,6 +271,13 @@ export function HeroLanding(props: HeroLandingProps) {
               animate={isScrolled ? 'visible' : 'hidden'}
               variants={navPillVariants}
               aria-hidden={!isScrolled}
+              // `inert` is what actually takes this out of the tab order and the
+              // accessibility tree. Both nav states stay mounted so they can
+              // cross-fade, and opacity:0 + pointer-events-none leaves their
+              // links and buttons focusable — meaning a keyboard user could tab
+              // into an invisible nav. (aria-hidden alone is not enough, and
+              // focusable content inside aria-hidden is itself a violation.)
+              inert={!isScrolled}
               className={cn(
                 'flex lg:gap-x-8 xl:gap-x-12 px-5 py-2 rounded-full backdrop-blur-md bg-background/60 border border-border/50 shadow-lg',
                 isScrolled ? 'pointer-events-auto' : 'pointer-events-none'
@@ -281,6 +289,11 @@ export function HeroLanding(props: HeroLandingProps) {
                 layoutGroup="compact"
                 onNavigate={handleSmoothScroll}
               />
+              {/* Kept reachable in the compact nav too — once scrolled past the
+                  hero, this is the only nav on screen. */}
+              <span className="ml-1 flex items-center border-l border-rule pl-2">
+                <ThemeToggle />
+              </span>
             </m.div>
           </div>
         )}
@@ -291,6 +304,10 @@ export function HeroLanding(props: HeroLandingProps) {
           initial={false}
           animate={isScrolled ? 'hidden' : 'visible'}
           variants={navBarVariants}
+          aria-hidden={isScrolled}
+          // See the note on the compact nav above — the same applies in reverse
+          // once this state has faded out.
+          inert={isScrolled}
           className={cn(
             'flex items-center justify-between p-4 sm:p-6 lg:px-8 max-w-7xl mx-auto',
             isScrolled ? 'pointer-events-none' : 'pointer-events-auto'
@@ -306,7 +323,8 @@ export function HeroLanding(props: HeroLandingProps) {
               />
             </a>
           </div>
-          <div className="flex lg:hidden">
+          <div className="flex items-center gap-1 lg:hidden">
+            <ThemeToggle />
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
@@ -326,9 +344,9 @@ export function HeroLanding(props: HeroLandingProps) {
               />
             </div>
           )}
-          {loginText && loginHref && (
-            <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-              <a 
+          <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:gap-2">
+            {loginText && loginHref && (
+              <a
                 href={loginHref}
                 onClick={(e) => handleSmoothScroll(e, loginHref)}
                 className="relative text-sm/6 font-semibold text-foreground transition-all duration-300 group px-4 py-2 rounded-lg"
@@ -337,8 +355,9 @@ export function HeroLanding(props: HeroLandingProps) {
                 <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/20 via-primary/30 to-primary/20 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300 -z-0"></span>
                 <span className="absolute inset-0 rounded-lg bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"></span>
               </a>
-            </div>
-          )}
+            )}
+            <ThemeToggle />
+          </div>
         </m.nav>
         <Dialog open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <DialogContent className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-card px-4 py-4 sm:px-6 sm:py-6 sm:max-w-sm sm:ring-1 sm:ring-border lg:hidden !left-auto !top-0 !translate-x-0 !translate-y-0 max-w-sm h-full rounded-none data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right">

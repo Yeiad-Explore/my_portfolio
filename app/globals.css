@@ -37,14 +37,51 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Editorial additions — exposed to Tailwind so `text-brand`, `border-rule`
+     etc. exist as utilities. */
+  --color-brand: var(--brand);
+  --color-brand-muted: var(--brand-muted);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --font-display: var(--font-display-family);
 }
 
 :root {
-  --radius: 0.625rem;
+  /* Editorial: corners are nearly square. Cards stop being the design and
+     rules + typography carry it instead. */
+  --radius: 0.25rem;
+
+  /* Mirrors DURATION.hover in lib/motion.ts — see the .theme-icon note below.
+     lib/motion.ts stays the source of truth for all motion timing. */
+  --duration-hover: 0.2s;
+
+  /* The display family. Kept as a single indirection so a high-contrast serif
+     can be swapped in for headings without touching a single component. */
+  --font-display-family: var(--font-geist-sans);
+
+  /*
+   * Brand accent. Note this is separate from --primary on purpose: --primary is
+   * the high-contrast "ink" used for solid buttons and needs to stay near-black
+   * / near-white for text contrast, whereas --brand is a chromatic accent used
+   * sparingly on rules, numerals, marks and links — which is exactly how an
+   * editorial layout wants colour used.
+   *
+   * The hue is the warm orange already present in the site's gradient blobs, so
+   * the accent reads as continuous with the existing identity rather than new.
+   */
+  --brand: oklch(0.62 0.19 41.116);
+  --brand-muted: oklch(0.62 0.19 41.116 / 0.14);
+
+  /* Hairlines. `rule` is for structural dividers, `rule-strong` for the heavier
+     line under a section title. */
+  --rule: oklch(0.145 0 0 / 0.14);
+  --rule-strong: oklch(0.145 0 0 / 0.32);
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -79,6 +116,14 @@
 }
 
 .dark {
+  /* Lifted lightness and slightly reduced chroma so the accent stays legible
+     against a dark ground without vibrating. */
+  --brand: oklch(0.75 0.16 45);
+  --brand-muted: oklch(0.75 0.16 45 / 0.16);
+
+  --rule: oklch(1 0 0 / 0.14);
+  --rule-strong: oklch(1 0 0 / 0.34);
+
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -118,11 +163,132 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Editorial body copy: opened-up leading, and real typographic niceties
+       that matter once type is doing the heavy lifting. */
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+    text-rendering: optimizeLegibility;
+  }
+  /* Tells the browser to theme form controls, scrollbars and caret to match.
+     Set here as the default and overridden inline by the pre-paint script. */
+  :root {
+    color-scheme: light;
+  }
+  .dark {
+    color-scheme: dark;
   }
 
   /* Hide Next.js dev portal */
   nextjs-portal {
     display: none !important;
+  }
+}
+
+/* ==========================================================================
+   EDITORIAL TYPE SCALE
+   ==========================================================================
+   A deliberate six-step scale replacing ad-hoc per-section font sizes. Every
+   step is fluid via clamp(), so there are no size jumps at breakpoints, and the
+   display steps carry negative tracking and sub-1 leading — the combination
+   that makes large type read as designed rather than merely big.
+   ========================================================================== */
+@layer components {
+  .type-display {
+    font-family: var(--font-display-family);
+    font-size: clamp(3.25rem, 12vw, 9.5rem);
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  .type-h1 {
+    font-family: var(--font-display-family);
+    font-size: clamp(2.25rem, 6vw, 4.5rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  .type-h2 {
+    font-family: var(--font-display-family);
+    font-size: clamp(1.75rem, 3.2vw, 2.75rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  .type-h3 {
+    font-size: clamp(1.125rem, 1.6vw, 1.375rem);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+  }
+
+  /* Standfirst / intro paragraph under a heading. */
+  .type-lede {
+    font-size: clamp(1.0625rem, 1.5vw, 1.375rem);
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+    font-weight: 400;
+    text-wrap: pretty;
+  }
+
+  .type-body {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    text-wrap: pretty;
+  }
+
+  .type-small {
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  /*
+   * The editorial section marker: "01 / SKILLS". Mono + wide tracking + tabular
+   * figures so the numerals align down the page across sections.
+   */
+  .type-index {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Small caps-ish label for metadata rows (dates, tags, captions). */
+  .type-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  /*
+   * Cross-fading theme icons. This has to be a CSS transition rather than a
+   * Framer Motion one, because which icon is visible is decided by the `dark`
+   * class — reading the theme in React would make the first client render
+   * disagree with the server's.
+   *
+   * --duration-hover mirrors DURATION.hover in lib/motion.ts. That file remains
+   * the source of truth for motion timing; this is the one value that must be
+   * kept in step with it, because CSS cannot import from TypeScript.
+   */
+  .theme-icon {
+    transition: opacity var(--duration-hover) ease-out;
+  }
+
+  /* Hairline dividers. Used instead of card borders and drop shadows. */
+  .rule {
+    border-top: 1px solid var(--rule);
+  }
+
+  .rule-strong {
+    border-top: 1px solid var(--rule-strong);
   }
 }
 
