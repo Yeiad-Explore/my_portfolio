@@ -2,6 +2,8 @@
 
 import { cn } from "@/lib/utils";
 import { Sparkles } from "lucide-react";
+import { IdleMotion } from "@/components/motion/idle-motion";
+import { LOOP } from "@/lib/motion";
 
 interface DisplayCardProps {
   className?: string;
@@ -63,7 +65,21 @@ export default function DisplayCards({ cards }: DisplayCardsProps) {
   return (
     <div className="grid [grid-template-areas:'stack'] place-items-center opacity-100 animate-in fade-in-0 duration-700">
       {displayCards.map((cardProps, index) => (
-        <DisplayCard key={index} {...cardProps} />
+        // A2 — each card floats independently. The wrapper carries
+        // [grid-area:stack] so it, not the card, is the stacking grid item, and
+        // the card keeps its own skew/translate utility classes untouched.
+        // The durations are mutually indivisible (16 / 19.5 / 23s), which is what
+        // actually keeps the three out of phase; the small start delay just
+        // offsets them from the first frame.
+        <IdleMotion
+          key={index}
+          preset="float"
+          duration={LOOP.float[index % LOOP.float.length]}
+          delay={index * 0.6}
+          className="[grid-area:stack]"
+        >
+          <DisplayCard {...cardProps} />
+        </IdleMotion>
       ))}
     </div>
   );

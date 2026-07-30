@@ -2,9 +2,13 @@
 
 import { ReactNode, useEffect, useRef } from "react";
 import { ArrowRight } from "lucide-react";
+import { m } from "motion/react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { IdleMotion } from "@/components/motion/idle-motion";
+import { LOOP, type IdlePreset } from "@/lib/motion";
+import { useMotionPrefs } from "@/lib/use-motion";
 
 const BentoGrid = ({
   children,
@@ -33,6 +37,8 @@ const BentoCard = ({
   description,
   href,
   cta,
+  iconIdle,
+  iconIdleDuration = LOOP.icon[0],
 }: {
   name: string;
   className: string;
@@ -41,8 +47,13 @@ const BentoCard = ({
   description: string;
   href: string;
   cta: string;
+  /** S3 — which idle motion this card's icon gets, so no two cards match */
+  iconIdle?: IdlePreset;
+  /** S3 — loop length for that motion (§7: 15–40s) */
+  iconIdleDuration?: number;
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
+  const { variants, lift } = useMotionPrefs();
 
   useEffect(() => {
     const card = cardRef.current;
@@ -64,9 +75,15 @@ const BentoCard = ({
   }, []);
 
   return (
-    <div
+    // S1 + S2 — the motion lives on the card's own root, not a wrapper, so the
+    // grid-placement classes in `className` stay on the actual grid item.
+    // The entrance variant is inherited from the <RevealGroup> in the section,
+    // which supplies the ~80ms stagger.
+    <m.div
       ref={cardRef}
       key={name}
+      variants={variants.fadeScale}
+      {...lift}
       className={cn(
         "bento-card group relative col-span-3 flex flex-col justify-between overflow-hidden rounded-xl",
         // light styles
@@ -78,7 +95,20 @@ const BentoCard = ({
     >
       <div>{background}</div>
       <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-1 p-6 transition-all duration-300 group-hover:-translate-y-10">
-        <Icon className="h-12 w-12 origin-left transform-gpu text-neutral-700 dark:text-neutral-300 transition-all duration-300 ease-in-out group-hover:scale-75" />
+        {/* S3 — per-card idle motion on the icon. Wrapped rather than applied to
+            the icon itself so the existing group-hover:scale-75 CSS transform
+            and the loop's transform live on separate elements. */}
+        {iconIdle ? (
+          <IdleMotion
+            preset={iconIdle}
+            duration={iconIdleDuration}
+            className="w-fit origin-left"
+          >
+            <Icon className="h-12 w-12 origin-left transform-gpu text-neutral-700 dark:text-neutral-300 transition-all duration-300 ease-in-out group-hover:scale-75" />
+          </IdleMotion>
+        ) : (
+          <Icon className="h-12 w-12 origin-left transform-gpu text-neutral-700 dark:text-neutral-300 transition-all duration-300 ease-in-out group-hover:scale-75" />
+        )}
         <h3 className="text-xl font-semibold text-neutral-700 dark:text-neutral-300">
           {name}
         </h3>
@@ -98,7 +128,7 @@ const BentoCard = ({
         </Button>
       </div>
       <div className="pointer-events-none absolute inset-0 transform-gpu transition-all duration-300 group-hover:bg-black/[.03] group-hover:dark:bg-neutral-800/10" />
-    </div>
+    </m.div>
   );
 };
 

@@ -1,6 +1,7 @@
 'use client'
 
 import CardFlip from '@/components/ui/flip-card'
+import { Reveal, RevealGroup, RevealItem } from '@/components/motion/reveal'
 
 export function ServicesSection() {
   const services = [
@@ -42,27 +43,36 @@ export function ServicesSection() {
   return (
     <section id="services" className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl lg:text-center">
+        <Reveal className="mx-auto max-w-2xl lg:text-center">
           <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             Services
           </h2>
           <p className="mt-2 text-lg leading-8 text-muted-foreground">
             Comprehensive AI and automation solutions for your business
           </p>
-        </div>
+        </Reveal>
         <div className="mx-auto mt-16 sm:mt-20 lg:mt-24">
-          <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-12">
+          {/* SV1 — deliberately the same stagger + fade-scale entrance as the
+              Skills cards (§6.1 consistency). */}
+          <RevealGroup className="flex flex-wrap items-center justify-center gap-8 lg:gap-12">
             {services.map((service) => (
-              <CardFlip
+              // The wrapper repeats the card's own width constraint so it, not
+              // the card, is what the flex row sizes.
+              <RevealItem
                 key={service.title}
-                title={service.title}
-                subtitle={service.subtitle}
-                description={service.description}
-                features={service.features}
-                color={service.color}
-              />
+                variant="fadeScale"
+                className="w-full max-w-[300px]"
+              >
+                <CardFlip
+                  title={service.title}
+                  subtitle={service.subtitle}
+                  description={service.description}
+                  features={service.features}
+                  color={service.color}
+                />
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
         </div>
       </div>
     </section>

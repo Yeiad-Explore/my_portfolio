@@ -3,6 +3,24 @@
 import { cn } from '@/lib/utils';
 import { ArrowRight, Code2, Copy, Rocket, Zap } from 'lucide-react';
 import { useState } from 'react';
+import { m } from 'motion/react';
+
+import { TRANSITION } from '@/lib/motion';
+import { useMotionPrefs } from '@/lib/use-motion';
+
+/**
+ * Deterministic stand-in for Math.random(), seeded by index.
+ *
+ * The decorative bars previously sized themselves with Math.random() during
+ * render, which produced different values on the server and the client and
+ * failed hydration — and a failed hydration makes React discard and regenerate
+ * the tree, which restarts every entrance animation on the page. Same visual
+ * variety, same numbers on both sides.
+ */
+function spread(index: number, seed: number) {
+  const value = Math.sin((index + 1) * seed) * 10000;
+  return value - Math.floor(value);
+}
 
 export interface CardFlipProps {
   title?: string;
@@ -25,15 +43,30 @@ export default function CardFlip({
   color = '#ff2e88'
 }: CardFlipProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const { variants, viewport, reduced, isTouch } = useMotionPrefs();
 
   return (
     <div
       style={{
         ['--primary' as any]: color ?? '#2563eb',
       }}
-      className="group relative h-[360px] w-full max-w-[300px] [perspective:2000px]"
-      onMouseEnter={() => setIsFlipped(true)}
-      onMouseLeave={() => setIsFlipped(false)}
+      className="group relative h-[360px] w-full max-w-[300px] [perspective:2000px] rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      // G6 / §9 — the flip was hover-only, which left the entire back face
+      // (description, features, and the SV3 accent) unreachable on touch, since
+      // touch devices never fire mouseenter. Touch gets tap-to-toggle as the
+      // equivalent, and focus/blur makes the same content reachable by keyboard
+      // (§6.3). Both faces are always in the DOM, so assistive tech was never
+      // affected — this is specifically for sighted touch and keyboard users.
+      onMouseEnter={isTouch ? undefined : () => setIsFlipped(true)}
+      onMouseLeave={isTouch ? undefined : () => setIsFlipped(false)}
+      onClick={isTouch ? () => setIsFlipped((flipped) => !flipped) : undefined}
+      // Focus opens the card for keyboard users on pointer devices only. On
+      // touch it must stay off: tapping a focusable element fires focus *before*
+      // click, so focus-to-open followed by click-to-toggle would cancel out and
+      // the card would never flip.
+      onFocus={isTouch ? undefined : () => setIsFlipped(true)}
+      onBlur={isTouch ? undefined : () => setIsFlipped(false)}
+      tabIndex={0}
     >
       <div
         className={cn(
@@ -72,33 +105,55 @@ export default function CardFlip({
                 <div
                   key={i}
                   className={cn(
-                    'h-3 w-full rounded-sm',
+                    // `code-bar` is a stable hook for globals.css. This is the
+                    // one loop whose keyframes *end* invisible (opacity
+                    // 0 → 0.8 → 0), so the finish-instantly reduced-motion reset
+                    // would erase the bars; globals.css gives them a static
+                    // opacity instead. Done in CSS rather than by branching on
+                    // `reduced` here, because a preference-dependent class list
+                    // would break hydration (see lib/motion.ts).
+                    'code-bar h-3 w-full rounded-sm',
                     'from-primary/20 via-primary/30 to-primary/20 bg-gradient-to-r',
                     'animate-[slideIn_2s_ease-in-out_infinite]',
                     'opacity-0',
                   )}
                   style={{
-                    width: `${60 + Math.random() * 40}%`,
+                    // Rounded to 2dp deliberately: the browser re-serialises
+                    // long decimals in a style attribute at lower precision, so
+                    // full-precision values read back differently from what the
+                    // server emitted and register as a hydration mismatch.
+                    width: `${(60 + spread(i, 12.9898) * 40).toFixed(2)}%`,
                     animationDelay: `${i * 0.2}s`,
-                    marginLeft: `${Math.random() * 20}%`,
+                    marginLeft: `${(spread(i, 78.233) * 20).toFixed(2)}%`,
                   }}
                 />
               ))}
 
-              {/* Central rocket icon */}
+              {/* Central rocket icon.
+                  SV2 — the icon springs in when the card enters view. The pop
+                  lives on a wrapper so the inner div keeps its own
+                  group-hover:scale-110/rotate-12 CSS transform, which an inline
+                  motion transform on the same element would override. */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div
-                  className={cn(
-                    'h-12 w-12 rounded-xl',
-                    'from-primary via-primary/90 to-primary/80 bg-gradient-to-br',
-                    'flex items-center justify-center',
-                    'shadow-primary/25 shadow-lg',
-                    'animate-pulse',
-                    'transition-all duration-500 group-hover:scale-110 group-hover:rotate-12',
-                  )}
+                <m.div
+                  variants={variants.popIn}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={viewport}
                 >
-                  <Rocket className="h-6 w-6 text-white" />
-                </div>
+                  <div
+                    className={cn(
+                      'h-12 w-12 rounded-xl',
+                      'from-primary via-primary/90 to-primary/80 bg-gradient-to-br',
+                      'flex items-center justify-center',
+                      'shadow-primary/25 shadow-lg',
+                      'animate-pulse',
+                      'transition-all duration-500 group-hover:scale-110 group-hover:rotate-12',
+                    )}
+                  >
+                    <Rocket className="h-6 w-6 text-white" />
+                  </div>
+                </m.div>
               </div>
             </div>
           </div>
@@ -158,6 +213,17 @@ export default function CardFlip({
                   {title}
                 </h3>
               </div>
+              {/* SV3 — accent bar grows left-to-right under the title on hover.
+                  It sits on the *back* face because hovering flips the card:
+                  an accent on the front face would be turned away from the
+                  viewer at the exact moment it animated. `isFlipped` is already
+                  this card's hover state. */}
+              <m.span
+                aria-hidden="true"
+                className="block h-0.5 w-full max-w-[7rem] origin-left rounded-full bg-primary"
+                animate={{ scaleX: isFlipped ? 1 : 0 }}
+                transition={reduced ? TRANSITION.instant : TRANSITION.hoverFast}
+              />
               <p className="line-clamp-2 text-sm tracking-tight text-zinc-600 transition-all duration-500 ease-out group-hover:translate-y-[-2px] dark:text-zinc-400">
                 {description}
               </p>

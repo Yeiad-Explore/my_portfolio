@@ -3,6 +3,8 @@
 import { ExternalLink, BookOpen, TrendingUp, Award, Calendar } from 'lucide-react'
 import { NeuralNetwork } from '@/components/ui/neural-network'
 import { cn } from '@/lib/utils'
+import { Reveal, RevealGroup, RevealItem } from '@/components/motion/reveal'
+import { CountUp } from '@/components/motion/count-up'
 
 export function PublicationsSection() {
   const publications = [
@@ -44,7 +46,7 @@ export function PublicationsSection() {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background pointer-events-none" />
       
       <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
-        <div className="mx-auto max-w-2xl lg:text-center mb-16">
+        <Reveal className="mx-auto max-w-2xl lg:text-center mb-16">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 mb-6">
             <BookOpen className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium text-primary">Research Publications</span>
@@ -55,17 +57,25 @@ export function PublicationsSection() {
           <p className="mt-2 text-lg leading-8 text-muted-foreground">
             Advancing Natural Language Processing through innovative research
           </p>
-        </div>
+        </Reveal>
 
         <div className="mx-auto mt-16 max-w-5xl">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+          <RevealGroup className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             {publications.map((pub, index) => (
-              <div
+              // R2 — same lift treatment as the Skills / Services cards. The
+              // card's own `hover:-translate-y-2` (8px) is replaced by the
+              // shared 4px motion lift so all three sections match; the shadow
+              // and border hover styles are untouched.
+              <RevealItem
                 key={index}
+                variant="fadeScale"
+                lift
                 className={cn(
                   "group/publication relative overflow-hidden rounded-2xl border border-border bg-card/50 backdrop-blur-sm",
-                  "transition-all duration-500 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10",
-                  "hover:-translate-y-2"
+                  // Scoped to border/shadow instead of `transition-all`: `all`
+                  // would also CSS-transition the transform that Framer Motion
+                  // writes inline for the lift, so the two would fight.
+                  "transition-[border-color,box-shadow] duration-500 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10"
                 )}
               >
                 {/* Animated background gradient */}
@@ -174,29 +184,35 @@ export function PublicationsSection() {
                     boxShadow: `0 0 0 1px ${pub.color}40, 0 0 30px ${pub.color}20`
                   }}
                 />
-              </div>
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
 
-          {/* Stats footer */}
-          <div className="mt-12 text-center">
+          {/* Stats footer — R1: each number counts up from 0 once on scroll in. */}
+          <Reveal className="mt-12 text-center">
             <div className="inline-flex items-center gap-8 px-8 py-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-1">{publications.length}</div>
+                <div className="text-3xl font-bold text-primary mb-1">
+                  <CountUp value={publications.length} />
+                </div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide">Publications</div>
               </div>
               <div className="h-12 w-px bg-border" />
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-1">27+</div>
+                <div className="text-3xl font-bold text-primary mb-1">
+                  <CountUp value={27} suffix="+" />
+                </div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide">Total Citations</div>
               </div>
               <div className="h-12 w-px bg-border" />
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-1">2023</div>
+                <div className="text-3xl font-bold text-primary mb-1">
+                  <CountUp value={2023} />
+                </div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide">Latest Year</div>
               </div>
             </div>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>

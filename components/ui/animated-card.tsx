@@ -1,5 +1,11 @@
+"use client";
+
 import * as React from "react";
+import { m } from "motion/react";
+
 import { cn } from "@/lib/utils";
+import { STAGGER } from "@/lib/motion";
+import { useMotionPrefs } from "@/lib/use-motion";
 
 // --- Card Components ---
 
@@ -134,7 +140,11 @@ interface EllipseGradientProps {
 }
 
 const EllipseGradient = ({ color, id = "paint" }: EllipseGradientProps) => {
-  const uniqueId = `paint-${id}-${Math.random().toString(36).substr(2, 9)}`;
+  // Derived from the caller-supplied id only. It previously appended
+  // Math.random(), so the gradient's id and its url(#…) reference differed
+  // between server and client and failed hydration — which makes React
+  // regenerate the tree and restart the chart bar animations.
+  const uniqueId = `paint-${id}`;
   return (
     <div className="absolute inset-0 z-[5] flex h-full w-full items-center justify-center">
       <svg
@@ -170,112 +180,71 @@ interface LayerProps {
   secondaryColor?: string;
 }
 
+/**
+ * P2 — the chart bars, extracted from inline <path> elements into data so each
+ * can be animated and staggered. Order and geometry are unchanged; bars
+ * alternate between the main and secondary colour exactly as before.
+ */
+const BAR_PATHS = [
+  "M8 178C8 176.343 9.34315 175 11 175H25C26.6569 175 28 176.343 28 178V196H8V178Z",
+  "M32 168C32 166.343 33.3431 165 35 165H49C50.6569 165 52 166.343 52 168V196H32V168Z",
+  "M67 173C67 171.343 68.3431 170 70 170H84C85.6569 170 87 171.343 87 173V196H67V173Z",
+  "M91 153C91 151.343 92.3431 150 94 150H108C109.657 150 111 151.343 111 153V196H91V153Z",
+  "M126 142C126 140.343 127.343 139 129 139H143C144.657 139 146 140.343 146 142V196H126V142Z",
+  "M150 158C150 156.343 151.343 155 153 155H167C168.657 155 170 156.343 170 158V196H150V158Z",
+  "M187 133C187 131.343 188.343 130 190 130H204C205.657 130 207 131.343 207 133V196H187V133Z",
+  "M211 161C211 159.343 212.343 158 214 158H228C229.657 158 231 159.343 231 161V196H211V161Z",
+  "M248 150C248 148.343 249.343 147 251 147H265C266.657 147 268 148.343 268 150V196H248V150Z",
+  "M272 130C272 128.343 273.343 127 275 127H289C290.657 127 292 128.343 292 130V196H272V130Z",
+  "M307 133C307 131.343 308.343 130 310 130H324C325.657 130 327 131.343 327 133V196H307V133Z",
+  "M331 155C331 153.343 332.343 152 334 152H348C349.657 152 351 153.343 351 155V196H331V155Z",
+  "M363 161C363 159.343 364.343 158 366 158H380C381.657 158 383 159.343 383 161V196H363V161Z",
+  "M387 144C387 142.343 388.343 141 390 141H404C405.657 141 407 142.343 407 144V196H387V144Z",
+  "M423 126C423 124.343 424.343 123 426 123H440C441.657 123 443 124.343 443 126V196H423V126Z",
+  "M447 142C447 140.343 448.343 139 450 139H464C465.657 139 467 140.343 467 142V196H447V142Z",
+  "M483 125.461C483 124.102 484.343 123 486 123H500C501.657 123 503 124.102 503 125.461V196H483V125.461Z",
+  "M507 137.507C507 136.122 508.343 135 510 135H524C525.657 135 527 136.122 527 137.507V196H507V137.507Z",
+  "M543 108.212C543 106.438 544.343 105 546 105H560C561.657 105 563 106.438 563 108.212V196H543V108.212Z",
+  "M567 116.485C567 115.112 568.343 114 570 114H584C585.657 114 587 115.112 587 116.485V196H567V116.485Z",
+  "M603 79.8333C603 78.2685 604.343 77 606 77H620C621.657 77 623 78.2685 623 79.8333V196H603V79.8333Z",
+  "M627 91.8919C627 90.2947 628.343 89 630 89H644C645.657 89 647 90.2947 647 91.8919V196H627V91.8919Z",
+  "M661 66.7887C661 65.2485 662.343 64 664 64H678C679.657 64 681 65.2485 681 66.7887V196H661V66.7887Z",
+  "M685 55.7325C685 54.2233 686.343 53 688 53H702C703.657 53 705 54.2233 705 55.7325V196H685V55.7325Z",
+];
+
 const Layer1 = ({ color, secondaryColor }: LayerProps) => {
+  const { variants, stagger, viewport } = useMotionPrefs();
+
   return (
     <div className="ease-[cubic-bezier(0.6, 0.6, 0, 1)] absolute top-0 left-0 z-[6] transform transition-transform duration-500 group-hover/animated-card:translate-x-[-50%]">
-      <svg
+      {/* P2 — bars grow from zero on scroll into view, staggered ~30ms apart.
+          Growth is `scaleY` about each bar's own bottom edge (via
+          transform-box: fill-box), never an animated `height`, so this costs no
+          layout (§6.2). */}
+      <m.svg
         className="w-[712px]"
         viewBox="0 0 712 180"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        variants={stagger(STAGGER.bar)}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewport}
       >
-        <path
-          d="M8 178C8 176.343 9.34315 175 11 175H25C26.6569 175 28 176.343 28 178V196H8V178Z"
-          fill={color}
-        />
-        <path
-          d="M32 168C32 166.343 33.3431 165 35 165H49C50.6569 165 52 166.343 52 168V196H32V168Z"
-          fill={secondaryColor}
-        />
-        <path
-          d="M67 173C67 171.343 68.3431 170 70 170H84C85.6569 170 87 171.343 87 173V196H67V173Z"
-          fill={color}
-        />
-        <path
-          d="M91 153C91 151.343 92.3431 150 94 150H108C109.657 150 111 151.343 111 153V196H91V153Z"
-          fill={secondaryColor}
-        />
-        <path
-          d="M126 142C126 140.343 127.343 139 129 139H143C144.657 139 146 140.343 146 142V196H126V142Z"
-          fill={color}
-        />
-        <path
-          d="M150 158C150 156.343 151.343 155 153 155H167C168.657 155 170 156.343 170 158V196H150V158Z"
-          fill={secondaryColor}
-        />
-        <path
-          d="M187 133C187 131.343 188.343 130 190 130H204C205.657 130 207 131.343 207 133V196H187V133Z"
-          fill={color}
-        />
-        <path
-          d="M211 161C211 159.343 212.343 158 214 158H228C229.657 158 231 159.343 231 161V196H211V161Z"
-          fill={secondaryColor}
-        />
-        <path
-          d="M248 150C248 148.343 249.343 147 251 147H265C266.657 147 268 148.343 268 150V196H248V150Z"
-          fill={color}
-        />
-        <path
-          d="M272 130C272 128.343 273.343 127 275 127H289C290.657 127 292 128.343 292 130V196H272V130Z"
-          fill={secondaryColor}
-        />
-        <path
-          d="M307 133C307 131.343 308.343 130 310 130H324C325.657 130 327 131.343 327 133V196H307V133Z"
-          fill={color}
-        />
-        <path
-          d="M331 155C331 153.343 332.343 152 334 152H348C349.657 152 351 153.343 351 155V196H331V155Z"
-          fill={secondaryColor}
-        />
-        <path
-          d="M363 161C363 159.343 364.343 158 366 158H380C381.657 158 383 159.343 383 161V196H363V161Z"
-          fill={color}
-        />
-        <path
-          d="M387 144C387 142.343 388.343 141 390 141H404C405.657 141 407 142.343 407 144V196H387V144Z"
-          fill={secondaryColor}
-        />
-        <path
-          d="M423 126C423 124.343 424.343 123 426 123H440C441.657 123 443 124.343 443 126V196H423V126Z"
-          fill={color}
-        />
-        <path
-          d="M447 142C447 140.343 448.343 139 450 139H464C465.657 139 467 140.343 467 142V196H447V142Z"
-          fill={secondaryColor}
-        />
-        <path
-          d="M483 125.461C483 124.102 484.343 123 486 123H500C501.657 123 503 124.102 503 125.461V196H483V125.461Z"
-          fill={color}
-        />
-        <path
-          d="M507 137.507C507 136.122 508.343 135 510 135H524C525.657 135 527 136.122 527 137.507V196H507V137.507Z"
-          fill={secondaryColor}
-        />
-        <path
-          d="M543 108.212C543 106.438 544.343 105 546 105H560C561.657 105 563 106.438 563 108.212V196H543V108.212Z"
-          fill={color}
-        />
-        <path
-          d="M567 116.485C567 115.112 568.343 114 570 114H584C585.657 114 587 115.112 587 116.485V196H567V116.485Z"
-          fill={secondaryColor}
-        />
-        <path
-          d="M603 79.8333C603 78.2685 604.343 77 606 77H620C621.657 77 623 78.2685 623 79.8333V196H603V79.8333Z"
-          fill={color}
-        />
-        <path
-          d="M627 91.8919C627 90.2947 628.343 89 630 89H644C645.657 89 647 90.2947 647 91.8919V196H627V91.8919Z"
-          fill={secondaryColor}
-        />
-        <path
-          d="M661 66.7887C661 65.2485 662.343 64 664 64H678C679.657 64 681 65.2485 681 66.7887V196H661V66.7887Z"
-          fill={color}
-        />
-        <path
-          d="M685 55.7325C685 54.2233 686.343 53 688 53H702C703.657 53 705 54.2233 705 55.7325V196H685V55.7325Z"
-          fill={secondaryColor}
-        />
-      </svg>
+        {BAR_PATHS.map((d, index) => (
+          <m.path
+            key={index}
+            d={d}
+            fill={index % 2 === 0 ? color : secondaryColor}
+            variants={variants.barGrow}
+            // `originY: 1` (Motion's own API), not CSS transform-origin: for SVG
+            // children Motion derives transform-origin from originX/originY and
+            // overwrites the CSS property with its 50% 50% default, which would
+            // grow each bar from its middle instead of its baseline.
+            style={{ transformBox: "fill-box", originY: 1 }}
+          />
+        ))}
+      </m.svg>
     </div>
   );
 };

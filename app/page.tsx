@@ -74,8 +74,10 @@ export default function Home() {
     className: "min-h-screen"
   }
 
+  // Note: no `scroll-smooth` class here — native CSS smooth scrolling fights
+  // Lenis, which now owns scrolling (G1).
   return (
-    <div className="scroll-smooth">
+    <div>
       <div id="home">
         <HeroLanding {...heroProps} />
       </div>

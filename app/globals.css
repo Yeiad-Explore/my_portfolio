@@ -783,3 +783,43 @@
     opacity: 0.2;
   }
 }
+
+/* ==========================================================================
+   G5 — prefers-reduced-motion
+   ==========================================================================
+   Framer Motion animations are handled in TypeScript: every animated component
+   reads `useMotionPrefs()` (lib/use-motion.ts), which collapses slide/scale to a
+   plain opacity fade and switches idle loops off. This block covers the motion
+   that hook cannot reach: the CSS @keyframes above, Tailwind's animate-*
+   utilities, and CSS transitions.
+
+   Note the technique. Rather than `animation: none`, animations are run to
+   completion instantly (0.01ms, one iteration). That matters because several of
+   these keyframes hold an element's *visible* resting state in their end frame
+   rather than its start — the code-syntax strokes, for instance, begin at
+   `stroke-dashoffset: 100` (fully hidden) and animate to 0. Cancelling those
+   outright would leave the artwork permanently invisible; finishing them
+   instantly lands on the intended static picture.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /*
+   * The exception to the finish-instantly rule. The Services card's decorative
+   * code bars loop opacity 0 → 0.8 → 0, so their end frame is invisible and the
+   * reset above would erase them. Give them a static presence instead.
+   */
+  .code-bar {
+    animation: none !important;
+    opacity: 0.5 !important;
+  }
+}

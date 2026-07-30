@@ -3,6 +3,9 @@
 import DisplayCards from '@/components/ui/display-cards'
 import { Brain, Cpu, Zap, BookOpen, Globe, Rocket } from 'lucide-react'
 import { CpuArchitecture } from '@/components/ui/cpu-architecture'
+import { Reveal, RevealGroup, RevealItem } from '@/components/motion/reveal'
+import { Tilt } from '@/components/motion/tilt'
+import { STAGGER } from '@/lib/motion'
 
 export function AboutSection() {
   const cards = [
@@ -50,52 +53,59 @@ export function AboutSection() {
         />
       </div>
       <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-16">
+        <Reveal className="text-center mb-16">
           <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl mb-4">
             Building Intelligence
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
             Hover to explore my journey in AI and automation
           </p>
-        </div>
+        </Reveal>
 
         {/* Two-column layout: Text on left, Cards on right */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[500px]">
           {/* Left Column - Text Content */}
           <div className="space-y-6">
-            <p className="text-lg text-muted-foreground leading-relaxed text-left">
+            {/* A1 — copy reveals on scroll with the shared fade + slide-up. */}
+            <Reveal
+              as="p"
+              className="text-lg text-muted-foreground leading-relaxed text-left"
+            >
               I'm an <span className="text-foreground font-semibold">AI Engineer and Consultant</span> focused on helping businesses harness the power of automation and large language models. My work spans multi-agent systems, RAG-based chatbots, speech processing, and n8n-powered business automation.
-            </p>
-            
-            <div className="space-y-4 pt-4">
-              <div className="flex items-start gap-4">
+            </Reveal>
+
+            {/* A4 — icon + text rows stagger in under the paragraph, ~80ms apart. */}
+            <RevealGroup className="space-y-4 pt-4" each={STAGGER.bullet}>
+              <RevealItem className="flex items-start gap-4">
                 <Zap className="size-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold text-foreground mb-1">Fast Delivery</h3>
                   <p className="text-sm text-muted-foreground text-left">Production-ready AI systems deployed efficiently</p>
                 </div>
-              </div>
-              <div className="flex items-start gap-4">
+              </RevealItem>
+              <RevealItem className="flex items-start gap-4">
                 <Globe className="size-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold text-foreground mb-1">Global Reach</h3>
                   <p className="text-sm text-muted-foreground text-left">Clients & collaborations worldwide</p>
                 </div>
-              </div>
-              <div className="flex items-start gap-4">
+              </RevealItem>
+              <RevealItem className="flex items-start gap-4">
                 <Rocket className="size-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold text-foreground mb-1">Innovation</h3>
                   <p className="text-sm text-muted-foreground text-left">Bridging research & practical solutions</p>
                 </div>
-              </div>
-            </div>
+              </RevealItem>
+            </RevealGroup>
           </div>
 
-          {/* Right Column - Display Cards */}
-          <div className="flex justify-center lg:justify-end items-center">
+          {/* Right Column - Display Cards.
+              A3 — the stack tilts toward the cursor; A2 (independent per-card
+              float) lives inside DisplayCards, one wrapper per card. */}
+          <Tilt className="flex justify-center lg:justify-end items-center">
             <DisplayCards cards={cards} />
-          </div>
+          </Tilt>
         </div>
       </div>
     </section>

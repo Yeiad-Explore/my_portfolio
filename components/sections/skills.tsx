@@ -2,6 +2,8 @@
 
 import { Code, Settings, Cloud, Zap, Brain } from 'lucide-react'
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid'
+import { Reveal, RevealGroup } from '@/components/motion/reveal'
+import { LOOP, type IdlePreset } from '@/lib/motion'
 import { CpuArchitecture } from '@/components/ui/cpu-architecture'
 import { CodeSyntax } from '@/components/ui/code-syntax'
 import { NetworkNodes } from '@/components/ui/network-nodes'
@@ -9,6 +11,11 @@ import { CloudInfrastructure } from '@/components/ui/cloud-infrastructure'
 import { WorkflowAutomation } from '@/components/ui/workflow-automation'
 
 export function SkillsSection() {
+  // S3 — a different idle motion per card, each chosen to suit its icon (the gear
+  // turns, the cloud floats, the bolt flickers) with a distinct loop length, so
+  // the five never move in unison.
+  const iconIdle: IdlePreset[] = ['drift', 'rotate', 'float', 'flicker', 'breathe']
+
   const skills = [
     {
       Icon: Code,
@@ -126,19 +133,29 @@ export function SkillsSection() {
   return (
     <section id="skills" className="relative py-24 sm:py-32 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl lg:text-center mb-16">
+        <Reveal className="mx-auto max-w-2xl lg:text-center mb-16">
           <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             Skills & Expertise
           </h2>
           <p className="mt-2 text-lg leading-8 text-muted-foreground">
             Technologies and tools I work with to build intelligent solutions
           </p>
-        </div>
-        <BentoGrid className="lg:grid-rows-3">
-          {skills.map((skill) => (
-            <BentoCard key={skill.name} {...skill} />
-          ))}
-        </BentoGrid>
+        </Reveal>
+        {/* S1 — the stagger parent. Each BentoCard's root is the animated child
+            and inherits the label through context, so the grid keeps its own
+            layout element and nothing is wrapped. */}
+        <RevealGroup amount={0.1}>
+          <BentoGrid className="lg:grid-rows-3">
+            {skills.map((skill, index) => (
+              <BentoCard
+                key={skill.name}
+                {...skill}
+                iconIdle={iconIdle[index]}
+                iconIdleDuration={LOOP.icon[index]}
+              />
+            ))}
+          </BentoGrid>
+        </RevealGroup>
       </div>
     </section>
   )

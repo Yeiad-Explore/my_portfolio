@@ -1,8 +1,11 @@
 'use client';
 import React from 'react';
 import type { ComponentProps, ReactNode } from 'react';
-import { motion, useReducedMotion } from 'motion/react';
+import { m } from 'motion/react';
 import { Mail, Github, Linkedin, Phone } from 'lucide-react';
+
+import { DURATION, EASE, revealTransition } from '@/lib/motion';
+import { useMotionPrefs } from '@/lib/use-motion';
 
 interface FooterLink {
 	title: string;
@@ -105,26 +108,37 @@ export function Footer() {
 
 type ViewAnimationProps = {
 	delay?: number;
-	className?: ComponentProps<typeof motion.div>['className'];
+	className?: ComponentProps<typeof m.div>['className'];
 	children: ReactNode;
 };
 
 function AnimatedContainer({ className, delay = 0.1, children }: ViewAnimationProps) {
-	const shouldReduceMotion = useReducedMotion();
+	// Reads the site-wide preference through the shared hook rather than calling
+	// useReducedMotion() again here, and takes its timing from lib/motion.ts
+	// rather than hardcoding it (§4, §7, G5).
+	const { reduced, viewport } = useMotionPrefs();
 
-	if (shouldReduceMotion) {
-		return children;
-	}
-
+	// The wrapper is rendered unconditionally. Returning bare `children` under
+	// reduced motion (as this did originally) removes an element from the tree,
+	// and because the preference only resolves on the client that is a hydration
+	// mismatch. Reduced motion is expressed in the transition instead: blur and
+	// translate settle instantly while opacity still fades (G5).
 	return (
-		<motion.div
+		// `m.div`, not `motion.div`: inside LazyMotion, `motion.*` bundles the full
+		// feature set itself and defeats the code-splitting §4 asks for.
+		<m.div
 			initial={{ filter: 'blur(4px)', translateY: -8, opacity: 0 }}
 			whileInView={{ filter: 'blur(0px)', translateY: 0, opacity: 1 }}
-			viewport={{ once: true }}
-			transition={{ delay, duration: 0.8 }}
+			viewport={viewport}
+			transition={revealTransition(
+				reduced,
+				{ duration: DURATION.revealSlow, ease: EASE.out },
+				delay,
+				['filter', 'translateY'],
+			)}
 			className={className}
 		>
 			{children}
-		</motion.div>
+		</m.div>
 	);
 };

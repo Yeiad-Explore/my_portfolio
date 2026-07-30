@@ -20,6 +20,17 @@ interface AntigravityProps {
   pulseSpeed?: number;
   particleShape?: 'capsule' | 'sphere' | 'box' | 'tetrahedron';
   fieldStrength?: number;
+  /**
+   * Render loop mode, forwarded to R3F's <Canvas>.
+   *
+   * 'always' runs the particle simulation continuously. 'demand' renders one
+   * frame and then idles, which is how this effect is switched off for
+   * prefers-reduced-motion (G5) and paused while the hero is scrolled out of
+   * view (§6.2) — 'demand' rather than 'never' so a static particle field is
+   * still painted instead of a blank canvas, and the WebGL context is kept
+   * alive rather than being torn down and rebuilt on every scroll.
+   */
+  frameloop?: 'always' | 'demand' | 'never';
 }
 
 const AntigravityInner = ({
@@ -187,9 +198,9 @@ const AntigravityInner = ({
   );
 };
 
-const Antigravity = (props: AntigravityProps) => {
+const Antigravity = ({ frameloop = 'always', ...props }: AntigravityProps) => {
   return (
-    <Canvas camera={{ position: [0, 0, 50], fov: 35 }}>
+    <Canvas camera={{ position: [0, 0, 50], fov: 35 }} frameloop={frameloop}>
       <AntigravityInner {...props} />
     </Canvas>
   );
